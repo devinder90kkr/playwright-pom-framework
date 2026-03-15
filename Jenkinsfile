@@ -34,7 +34,8 @@ pipeline {
                 keepAll: true,
                 reportDir: 'playwright-report',
                 reportFiles: 'index.html',
-                reportName: 'Playwright Report'
+                reportName: 'Playwright Report',
+                includes: '**/*'
             ])
         }
     }
