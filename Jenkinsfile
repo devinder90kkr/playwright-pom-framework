@@ -19,23 +19,22 @@ pipeline {
             }
         }
 
-        stage('Run Playwright Tests') {
+        stage('Run Tests') {
             steps {
                 bat 'npx playwright test'
             }
         }
-
     }
 
     post {
         always {
             publishHTML([
-                allowMissing: false,
+                allowMissing: true,
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
                 reportDir: 'playwright-report',
                 reportFiles: 'index.html',
-                reportName: 'Playwright Test Report'
+                reportName: 'Playwright Report'
             ])
         }
     }
