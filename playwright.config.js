@@ -1,56 +1,86 @@
 // @ts-check
+/**
+ * Playwright Configuration File
+ *
+ * This file contains the complete configuration for the Playwright test framework.
+ * It defines test execution settings, browser configurations, reporting options,
+ * and global test behaviors for the SauceDemo e-commerce application testing.
+ *
+ * Key Configurations:
+ * - Test directory and parallel execution settings
+ * - Allure reporting for detailed test reports
+ * - Multi-browser testing (Chromium, Firefox, WebKit)
+ * - Screenshot and trace collection on failures
+ * - Base URL configuration from environment variables
+ */
+
 const { defineConfig, devices } = require('@playwright/test');
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
+ * Load environment variables from .env file for configuration
+ * This allows different settings for different environments (dev, staging, prod)
  */
 require('dotenv').config();
 
 /**
+ * Playwright Test Configuration
  * @see https://playwright.dev/docs/test-configuration
  */
 module.exports = defineConfig({
+  // Directory containing test files
   testDir: './tests',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['allure-playwright']],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: process.env.BASE_URL || 'https://opensource-demo.orangehrmlive.com',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+  // Run tests in files in parallel for faster execution
+  fullyParallel: true,
+
+  // Prevent accidental commits of test.only in CI environments
+  forbidOnly: !!process.env.CI,
+
+  // Retry failed tests only in CI (2 retries), no retries locally for faster feedback
+  retries: process.env.CI ? 2 : 0,
+
+  // Use single worker in CI to avoid resource conflicts, parallel locally
+  workers: process.env.CI ? 1 : undefined,
+
+  // Test reporters: Allure for detailed HTML reports with history and trends
+  reporter: [['allure-playwright']],
+
+  /* Global test options shared across all projects */
+  use: {
+    // Base URL for all page.goto() calls - loaded from environment or default to SauceDemo
+    baseURL: process.env.BASE_URL || 'https://www.saucedemo.com',
+
+    // Collect traces on test retries for debugging failed tests
     trace: 'on',
+
+    // Capture screenshots only when tests fail for efficient storage
     screenshot: 'only-on-failure',
+
+    // Timeout for individual actions (10 seconds) to prevent hanging tests
     actionTimeout: 10000,
   },
 
-  /* Configure projects for major browsers */
+  /* Browser configuration projects */
   projects: [
     {
+      // Chromium-based browser testing (Chrome, Edge, etc.)
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
+      // Firefox browser testing
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
 
     {
+      // WebKit/Safari browser testing
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
 
-    /* Test against mobile viewports. */
+    /* Mobile viewport testing (commented out - can be enabled if needed) */
     // {
     //   name: 'Mobile Chrome',
     //   use: { ...devices['Pixel 5'] },
@@ -60,7 +90,7 @@ module.exports = defineConfig({
     //   use: { ...devices['iPhone 12'] },
     // },
 
-    /* Test against branded browsers. */
+    /* Branded browser testing (commented out - can be enabled if needed) */
     // {
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
@@ -71,7 +101,7 @@ module.exports = defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
+  /* Local development server configuration (uncomment if testing local app) */
   // webServer: {
   //   command: 'npm run start',
   //   url: 'http://localhost:3000',
