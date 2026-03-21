@@ -133,6 +133,13 @@ npx playwright test --debug
    npx allure open allure-report
    ```
 
+### Clean Generated Reports
+```bash
+npm run clean:reports
+```
+
+This removes the generated `allure-report`, `allure-results`, `playwright-report`, and `test-results` folders before a fresh run.
+
 ### Playwright HTML Report
 ```bash
 npx playwright show-report
