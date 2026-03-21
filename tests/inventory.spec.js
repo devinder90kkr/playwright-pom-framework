@@ -40,7 +40,8 @@ test.describe('Inventory Tests', () => {
    * Initializes both LoginPage and InventoryPage instances, then performs login.
    * This ensures each inventory test starts from an authenticated state on the inventory page.
    */
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    logger.setTestLogFile(testInfo.outputPath('test.log'));
     loginPage = new LoginPage(page);
     inventoryPage = new InventoryPage(page);
 
@@ -54,12 +55,13 @@ test.describe('Inventory Tests', () => {
    * Attaches the test log file to the Allure report for debugging purposes.
    * This helps in analyzing test failures and understanding test execution flow.
    */
-  test.afterEach(async () => {
-    const logPath = 'logs/test.log';
+  test.afterEach(async ({}, testInfo) => {
+    const logPath = testInfo.outputPath('test.log');
     if (fs.existsSync(logPath)) {
       const logContent = fs.readFileSync(logPath, 'utf8');
       allure.attachment('Test Log', logContent, 'text/plain');
     }
+    logger.resetTestLogFile();
   });
 
   /**

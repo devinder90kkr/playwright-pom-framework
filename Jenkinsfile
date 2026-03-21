@@ -5,11 +5,15 @@ pipeline {
         nodejs "NodeJS18"
     }
 
+    environment {
+        CI = 'true'
+    }
+
     stages {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                bat 'npm ci'
             }
         }
 
@@ -28,6 +32,7 @@ pipeline {
 
 post {
     always {
+        archiveArtifacts artifacts: 'playwright-report/**, test-results/**', allowEmptyArchive: true
         allure([
             includeProperties: false,
             jdk: '',

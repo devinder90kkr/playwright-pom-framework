@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clean:reports": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$paths = 'allure-report','allure-results','playwright-report','test-results'; foreach ($path in $paths) { if (Test-Path $path) { Remove-Item -Recurse -Force $path } }\"",
     "test": "playwright test",
     "test:report": "playwright test && allure generate allure-results -o allure-report --clean",
     "allure:report": "allure serve allure-results"

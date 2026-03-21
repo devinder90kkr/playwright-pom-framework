@@ -35,7 +35,8 @@ test.describe('Login Tests', () => {
    * Initializes the LoginPage instance and navigates to the login page.
    * This ensures each test starts from a clean login page state.
    */
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    logger.setTestLogFile(testInfo.outputPath('test.log'));
     loginPage = new LoginPage(page);
     await loginPage.navigateToLoginPage();
   });
@@ -45,13 +46,14 @@ test.describe('Login Tests', () => {
   //  * Attaches the test log file to the Allure report for debugging purposes.
   //  * This helps in analyzing test failures and understanding test execution flow.
   //  */
-  // test.afterEach(async () => {
-  //   const logPath = 'logs/test.log';
-  //   if (fs.existsSync(logPath)) {
-  //     const logContent = fs.readFileSync(logPath, 'text/plain');
-  //     allure.attachment('Test Log', logContent, 'text/plain');
-  //   }
-  // });
+  test.afterEach(async ({}, testInfo) => {
+    const logPath = testInfo.outputPath('test.log');
+    if (fs.existsSync(logPath)) {
+      const logContent = fs.readFileSync(logPath, 'utf8');
+      allure.attachment('Test Log', logContent, 'text/plain');
+    }
+    logger.resetTestLogFile();
+  });
 
   /**
    * Test Case: Verify Login with valid credentials
@@ -68,12 +70,16 @@ test.describe('Login Tests', () => {
    *
    * Expected Result: User should be logged in and redirected to inventory page
    */
-  test('Verify Login with valid credentials', async () => {
+  test('Verify Login with valid credentials', async ({ page }) => {
     logger.info("Starting Login Test");
 
     await test.step("Login with valid credentials", async () => {
       await loginPage.login(loginData.username, loginData.password);
     });
 
+    await test.step("Verify user lands on inventory page", async () => {
+      await expect(page).toHaveURL(/inventory/);
+      await expect(page.locator('.title')).toHaveText('Products');
+    });
   });
 });
